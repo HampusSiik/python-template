@@ -1,5 +1,6 @@
-#!/bin/bash
-set -euo pipefail
+#!/usr/bin/env bash
+set -eu
+set -o pipefail 2>/dev/null || true
 
 QUIET=0
 if [ "${1:-}" = "--quiet" ]; then

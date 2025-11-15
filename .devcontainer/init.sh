@@ -1,5 +1,6 @@
-#!/bin/bash
-set -euo pipefail
+#!/usr/bin/env bash
+set -eu
+set -o pipefail 2>/dev/null || true
 
 WORKSPACE_ROOT="$(pwd)"
 DEFAULT_NAME="$(basename "$WORKSPACE_ROOT")"
