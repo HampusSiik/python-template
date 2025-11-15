@@ -8,22 +8,6 @@ PROJECT_NAME="${REQUESTED_NAME:-$DEFAULT_NAME}"
 
 echo "Initializing Python project: $PROJECT_NAME"
 
-ensure_uv_available() {
-    if command -v uv >/dev/null 2>&1; then
-        return
-    fi
-
-    if ! command -v curl >/dev/null 2>&1; then
-        echo "curl is required to install uv" >&2
-        exit 1
-    fi
-
-    echo "Installing uv..."
-    curl -LsSf https://astral.sh/uv/install.sh | sh >/dev/null
-    export PATH="$HOME/.local/bin:$PATH"
-    hash -r
-}
-
 ensure_uv_project() {
     if [ -f pyproject.toml ]; then
         echo "pyproject.toml already exists, skipping uv init"
@@ -65,7 +49,14 @@ pyproject.write_text(text)
 PY
 
     shopt -s dotglob
-    mv "$TEMP_DIR"/* "$WORKSPACE_ROOT"
+    # uv init creates its own Git metadata; skip it so we do not clobber the host repo
+    for entry in "$TEMP_DIR"/*; do
+        name="$(basename "$entry")"
+        if [ "$name" = ".git" ]; then
+            continue
+        fi
+        mv "$entry" "$WORKSPACE_ROOT/"
+    done
     shopt -u dotglob
     rm -rf "$TEMP_DIR"
 }
@@ -132,8 +123,7 @@ htmlcov/
 
 EOF
 }
-
-ensure_uv_available
+"$(dirname "$0")/install-tools.sh" --quiet
 ensure_uv_project
 ensure_basic_structure
 if ! uv add --dev pytest >/dev/null 2>&1; then

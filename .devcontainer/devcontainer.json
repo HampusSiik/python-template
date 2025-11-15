@@ -12,7 +12,7 @@
     "containerEnv": {
         "PROJECT_NAME": ""
     },
-    "initializeCommand": "chmod +x .devcontainer/init.sh",
-    "postCreateCommand": "bash .devcontainer/init.sh \"${PROJECT_NAME:-}\"",
+    "initializeCommand": "chmod +x .devcontainer/*.sh",
+    "postCreateCommand": "bash .devcontainer/install-tools.sh",
     "remoteUser": "vscode"
 }
